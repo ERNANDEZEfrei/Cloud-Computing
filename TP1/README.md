@@ -58,5 +58,9 @@ Welcome to Ubuntu 22.04.5 LTS (GNU/Linux 6.8.0-1031-azure x86_64)
 ``` 
 
 ### 2. *az* : a programmatic approach
+```powershell
+az vm create -g TP1.2 -n VMTP1.2 --image Ubuntu2204 --admin-username azureuser --ssh-key-values C:\Users\TERRA\.ssh\cloud_tp1.pub --size Standard_B1s --location francecentral
+```
+
 ### 3. Terraforming planets infrastructures
 
