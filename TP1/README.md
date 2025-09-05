@@ -34,13 +34,29 @@ The key's randomart image is:
 +----[SHA256]-----+
 ```
 ### C. Agent SSH
+Activation de OpenSSH :
 ```powershell
 Get-WindowsCapability -Online | Where-Object Name -like 'OpenSSH*'
 Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
 ```
 
+Ajout de la clé ssh au client : 
+```powershell
+Get-Service ssh-agent | Set-Service -StartupType Automatic
+Start-Service ssh-agent
+Get-Service ssh-agent
+ssh-add $env:USERPROFILE\.ssh\cloud_tp1
+```
+
 ## II. Spawn des VMs
+
 ### 1. Depuis la WebUI
+
+```bash
+ssh azureuser@4.233.103.219
+Welcome to Ubuntu 22.04.5 LTS (GNU/Linux 6.8.0-1031-azure x86_64)
+``` 
+
 ### 2. *az* : a programmatic approach
 ### 3. Terraforming planets infrastructures
 
