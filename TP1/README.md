@@ -5,31 +5,39 @@
 **Pourquoi ne pas utiliser RSA :**
 https://www.veritas.com/fr/ca/information-center/rsa-encryption
 
+
+**Quel algo utiliser :**
+https://cyber.gouv.fr/sites/default/files/2014/01/NT_OpenSSH.pdf
+
 ### B. Génération de votre paire de clés
 ```
-PS C:\Users\TERRA> ssh-keygen.exe -t ed25519
-Generating public/private ed25519 key pair.
-Enter file in which to save the key (C:\Users\TERRA/.ssh/id_ed25519): cloud_tp1
+PS C:\Users\TERRA> ssh-keygen -t ecdsa -b 256
+Generating public/private ecdsa key pair.
+Enter file in which to save the key (C:\Users\TERRA/.ssh/id_ecdsa): cloud_tp1
 Enter passphrase (empty for no passphrase):
 Enter same passphrase again:
 Your identification has been saved in cloud_tp1
 Your public key has been saved in cloud_tp1.pub
 The key fingerprint is:
-SHA256:h+Ycxz+SHP0rqUIT9tDmWzo0BbXaDjH5m7r7JFRE7zE alexandre@PC-ALEX-TERRA
+SHA256:E5bydA0dSlAuQrRccVRJ85RmFdV42TiSNFLSAHJv5kE alexandre@PC-ALEX-TERRA
 The key's randomart image is:
-+--[ED25519 256]--+
-|           o+    |
-|          .o o   |
-|         .+.o E  |
-|        +ooO.. o |
-|       .S*O.+ .  |
-|       +o*=*.+   |
-|       .oo==B..  |
-|        . +=o. . |
-|         .=*...  |
++---[ECDSA 256]---+
+|     .+ **EOO+.*O|
+|     o = B **=B.+|
+|      = * O .+.o |
+|       * B .     |
+|        S .      |
+|         .       |
+|                 |
+|                 |
+|                 |
 +----[SHA256]-----+
 ```
 ### C. Agent SSH
+```powershell
+Get-WindowsCapability -Online | Where-Object Name -like 'OpenSSH*'
+Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
+```
 
 ## II. Spawn des VMs
 ### 1. Depuis la WebUI
