@@ -64,3 +64,4 @@ az vm create -g TP1.2 -n VMTP1.2 --image Ubuntu2204 --admin-username azureuser -
 
 ### 3. Terraforming planets infrastructures
 
+

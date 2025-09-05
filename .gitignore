@@ -1,1 +1,3 @@
 /TP1/terraform.tfvars
+/TP1/terraform.lock.hcl
+/TP1/.terraform/*
