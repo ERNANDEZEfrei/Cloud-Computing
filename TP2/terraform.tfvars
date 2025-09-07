@@ -1,0 +1,5 @@
+resource_group_name = "TP1Terraform"
+admin_username = "azureuser"
+public_key_path = "cloud_tp1.pub"
+location = "francecentral"
+subscription_id = "1ac3cb02-c5db-4603-97cd-24523ae7a6d3"

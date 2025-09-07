@@ -114,3 +114,63 @@ Sep 05 14:47:10 VMTP1Terraform systemd[1]: Finished Cloud-init: Network Stage.
 ```
 
 ### 3. Terraforming planets infrastructures
+```powershell
+PS G:\Mon Drive\Cours\EFREI\Cloud-Computing\TP1> terraform apply
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # azurerm_linux_virtual_machine.main will be created
+  + resource "azurerm_linux_virtual_machine" "main" {
+      + admin_username                                         = "*********"
+      + allow_extension_operations                             = (known after apply)
+      + bypass_platform_safety_checks_on_user_schedule_enabled = false
+      + computer_name                                          = (known after apply)
+      + disable_password_authentication                        = (known after apply)
+      + disk_controller_type                                   = (known after apply)
+      + extensions_time_budget                                 = "PT1H30M"
+      + id                                                     = (known after apply)
+      + location                                               = "francecentral"
+      + max_bid_price                                          = -1
+      + name                                                   = "VMTP1Terraform"
+      + network_interface_ids                                  = (known after apply)
+      + os_managed_disk_id                                     = (known after apply)
+      + patch_assessment_mode                                  = (known after apply)
+      + patch_mode                                             = (known after apply)
+      + platform_fault_domain                                  = -1
+      + priority                                               = "Regular"
+      + private_ip_address                                     = (known after apply)
+      + private_ip_addresses                                   = (known after apply)
+      + provision_vm_agent                                     = (known after apply)
+      + public_ip_address                                      = (known after apply)
+      + public_ip_addresses                                    = (known after apply)
+      + resource_group_name                                    = "TP1Terraform"
+      + size                                                   = "Standard_B1s"
+      + virtual_machine_id                                     = (known after apply)
+      + vm_agent_platform_updates_enabled                      = (known after apply)
+
+      + admin_ssh_key {
+          + public_key = <<-EOT
+                ssh-ed25519 ********************/************************ **********@**************
+            EOT
+          + username   = "*********"
+        }
+
+      + os_disk {
+          + caching                   = "ReadWrite"
+          + disk_size_gb              = (known after apply)
+          + id                        = (known after apply)
+          + name                      = "vm-os-disk"
+          + storage_account_type      = "Standard_LRS"
+          + write_accelerator_enabled = false
+        }
+
+      + source_image_reference {
+          + offer     = "0001-com-ubuntu-server-focal"
+          + publisher = "Canonical"
+          + sku       = "20_04-lts"
+          + version   = "latest"
+        }
+        ```

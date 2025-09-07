@@ -1,0 +1,5 @@
+resource_group_name = "choisis un nom de resource group :)"
+admin_username = "met ton username là"
+public_key_path = "chemin vers ta clé publique ici"
+location = "zone"
+subscription_id = "met ton Subscription ID azure là"
