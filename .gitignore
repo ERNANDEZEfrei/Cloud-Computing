@@ -1,7 +1,7 @@
 /TP1/terraform.tfvars
-/TP1/.terraform.lock.hcl
-/TP1/.terraform/*
+/TP2/terraform.tfvars
 cloud_tp1.pub
 terraform.tfstate.backup
 .terraform*
 terraform.tfstate
+terraform.*

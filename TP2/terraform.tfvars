@@ -1,4 +1,4 @@
-resource_group_name = "TP1Terraform"
+resource_group_name = "TP2Terraform"
 admin_username = "azureuser"
 public_key_path = "cloud_tp1.pub"
 location = "francecentral"
