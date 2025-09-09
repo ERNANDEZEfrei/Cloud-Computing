@@ -5,7 +5,7 @@
 [Voir dans le ficher 'network.tf'](network.tf)
 ### 3. Proofs !
 Preuve du fonctionnement du ```terraform apply``` :
-```
+```powershell
 PS G:\Mon Drive\Cours\EFREI\Cloud-Computing\TP2> terraform apply
 
 Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
