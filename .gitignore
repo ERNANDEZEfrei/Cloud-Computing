@@ -1,7 +1,7 @@
 /TP1/terraform.tfvars
 /TP2/terraform.tfvars
-cloud_tp1.pub
+**/cloud_tp1.pub
 terraform.tfstate.backup
 .terraform*
-terraform.tfstate
-terraform.*
+/TP1/terraform.tfstate
+/TP2/terraform.tfstate
