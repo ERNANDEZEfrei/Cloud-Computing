@@ -190,3 +190,151 @@ Do you want to perform these actions?
 
   Enter a value:
 ```
+Preuve du *nsg* via une commande *az* : 
+```powershell
+az >> az network nic show --ids /subscriptions/1ac3cb02-c5db-4603-97cd-24523ae7a6d3/resourceGroups/TP2Terraform/providers/Microsoft.Network/networkInt
+option '--subscription' will be ignored due to use of '--ids'.
+option '-n' will be ignored due to use of '--ids'.
+option '--resource-group' will be ignored due to use of '--ids'.
+{
+  "auxiliaryMode": "None",
+  "auxiliarySku": "None",
+  "disableTcpStateTracking": false,
+  "dnsSettings": {
+    "appliedDnsServers": [],
+    "dnsServers": [],
+    "internalDomainNameSuffix": "xzzn5d4ui1nezhcjd55iqkroxa.parx.internal.cloudapp.net"
+  },
+  "enableAcceleratedNetworking": false,
+  "enableIPForwarding": false,
+  "etag": "W/\"77d7a931-26e6-4f3c-b17c-137f554b9fdb\"",
+  "hostedWorkloads": [],
+  "id": "/subscriptions/1ac3cb02-c5db-4603-97cd-24523ae7a6d3/resourceGroups/TP2Terraform/providers/Microsoft.Network/networkInterfaces/vm-nic",
+  "ipConfigurations": [
+    {
+      "etag": "W/\"77d7a931-26e6-4f3c-b17c-137f554b9fdb\"",
+      "id": "/subscriptions/**********************/resourceGroups/TP2Terraform/providers/Microsoft.Network/networkInterfaces/vm-nic/ipConfigurations/internal",
+      "name": "internal",
+      "primary": true,
+      "privateIPAddress": "10.0.1.4",
+      "privateIPAddressVersion": "IPv4",
+      "privateIPAllocationMethod": "Dynamic",
+      "provisioningState": "Succeeded",
+      "publicIPAddress": {
+        "id": "/subscriptions/**********************/resourceGroups/TP2Terraform/providers/Microsoft.Network/publicIPAddresses/vm-ip",
+        "resourceGroup": "TP2Terraform"
+      },
+      "resourceGroup": "TP2Terraform",
+      "subnet": {
+        "id": "/subscriptions/**********************/resourceGroups/TP2Terraform/providers/Microsoft.Network/virtualNetworks/vm-vnet/subnets/vm-subnet",
+        "resourceGroup": "TP2Terraform"
+      },
+      "type": "Microsoft.Network/networkInterfaces/ipConfigurations"
+    }
+  ],
+  "location": "francecentral",
+  "macAddress": "00-22-48-39-E8-BC",
+  "name": "vm-nic",
+  "networkSecurityGroup": {
+    "id": "/subscriptions/************************/resourceGroups/TP2Terraform/providers/Microsoft.Network/networkSecurityGroups/VMTP2Terraform-nsg",
+    "resourceGroup": "TP2Terraform"
+  },
+  "nicType": "Standard",
+  "primary": true,
+  "provisioningState": "Succeeded",
+  "resourceGroup": "TP2Terraform",
+  "resourceGuid": "************************",
+  "tags": {},
+  "tapConfigurations": [],
+  "type": "Microsoft.Network/networkInterfaces",
+  "virtualMachine": {
+    "id": "/subscriptions/************************/resourceGroups/TP2Terraform/providers/Microsoft.Compute/virtualMachines/VMTP2Terraform",
+    "resourceGroup": "TP2Terraform"
+  },
+  "vnetEncryptionSupported": false
+}
+```
+Preuve de la connection ssh : 
+```powershell
+PS C:\Users\TERRA> ssh azureuser@52.143.170.186
+The authenticity of host '52.143.170.186 (52.143.170.186)' can't be established.
+ED25519 key fingerprint is SHA256:jLjylrfghd4hopBe+S3pPRFaxxlYU5f4MTOR4VM0rNs.
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '52.143.170.186' (ED25519) to the list of known hosts.
+Welcome to Ubuntu 20.04.6 LTS (GNU/Linux 5.15.0-1089-azure x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+ System information as of Wed Sep 10 15:29:31 UTC 2025
+
+  System load:  0.0               Processes:             111
+  Usage of /:   5.3% of 28.89GB   Users logged in:       0
+  Memory usage: 30%               IPv4 address for eth0: 10.0.1.4
+  Swap usage:   0%
+
+Expanded Security Maintenance for Applications is not enabled.
+
+0 updates can be applied immediately.
+
+Enable ESM Apps to receive additional future security updates.
+See https://ubuntu.com/esm or run: sudo pro status
+
+
+The list of available updates is more than a week old.
+To check for new updates run: sudo apt update
+
+
+The programs included with the Ubuntu system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+applicable law.
+
+To run a command as administrator (user "root"), use "sudo <command>".
+See "man sudo_root" for details.
+
+azureuser@VMTP2Terraform:~$
+```
+**Étape pour l'écoute sur le port 2222 :**
+
+Modification du port d'écoute :
+```
+azureuser@VMTP2Terraform:~$ sudo nano /etc/ssh/sshd_config
+#       $OpenBSD: sshd_config,v 1.103 2018/04/09 20:41:22 tj Exp $
+
+# This is the sshd server system-wide configuration file.  See
+# sshd_config(5) for more information.
+
+# This sshd was compiled with PATH=/usr/bin:/bin:/usr/sbin:/sbin
+
+# The strategy used for options in the default sshd_config shipped with
+# OpenSSH is to specify options with their default value where
+# possible, but leave them commented.  Uncommented options override the
+# default value.
+
+Include /etc/ssh/sshd_config.d/*.conf
+
+Port 2222
+#AddressFamily any
+#ListenAddress 0.0.0.0
+#ListenAddress ::
+```
+Puis redemarrage du service : 
+```bash
+sudo systemctl restart sshd
+```
+Vérification de l'ecoute du port :
+```bash
+azureuser@VMTP2Terraform:~$ sudo ss -tulpn | grep sshd
+tcp     LISTEN   0        128              0.0.0.0:2222          0.0.0.0:*       users:(("sshd",pid=1938,fd=3))         
+tcp     LISTEN   0        128                 [::]:2222             [::]:*       users:(("sshd",pid=1938,fd=4)) 
+```
+Test de connection :
+```
+ssh -p 2222 azureuser@52.143.170.186
+ssh: connect to host 52.143.170.186 port 2222: Connection timed out
+```
