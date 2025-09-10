@@ -334,7 +334,9 @@ tcp     LISTEN   0        128              0.0.0.0:2222          0.0.0.0:*      
 tcp     LISTEN   0        128                 [::]:2222             [::]:*       users:(("sshd",pid=1938,fd=4)) 
 ```
 Test de connection :
-```
-ssh -p 2222 azureuser@52.143.170.186
+``` powershell
+PS C:\Users\TERRA> ssh -p 2222 azureuser@52.143.170.186
 ssh: connect to host 52.143.170.186 port 2222: Connection timed out
 ```
+
+## II. Un ptit nom DNS
