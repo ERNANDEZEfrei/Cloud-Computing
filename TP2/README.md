@@ -192,7 +192,7 @@ Do you want to perform these actions?
 ```
 Preuve du *nsg* via une commande *az* : 
 ```powershell
-az >> az network nic show --ids /subscriptions/1ac3cb02-c5db-4603-97cd-24523ae7a6d3/resourceGroups/TP2Terraform/providers/Microsoft.Network/networkInt
+az >> az network nic show --ids /subscriptions/***********************/resourceGroups/TP2Terraform/providers/Microsoft.Network/networkInt
 option '--subscription' will be ignored due to use of '--ids'.
 option '-n' will be ignored due to use of '--ids'.
 option '--resource-group' will be ignored due to use of '--ids'.
@@ -340,3 +340,79 @@ ssh: connect to host 52.143.170.186 port 2222: Connection timed out
 ```
 
 ## II. Un ptit nom DNS
+### 1. Adapter le plan Terraform
+[Voir dans le ficher 'main.tf'](main.tf)
+### 2. Ajouter un output custom à terraform apply
+[Voir dans le ficher 'outputs.tf'](outputs.tf)
+### 3. Proooofs !
+Voici la sortie de la commande fonctionnel ```terraform apply``` :
+```powershell
+PS G:\Mon Drive\Cours\EFREI\Cloud-Computing\TP2> terraform apply
+azurerm_resource_group.main: Refreshing state... [id=/subscriptions/1ac3cb02-c5db-4603-97cd-24523ae7a6d3/resourceGroups/TP2Terraform]
+azurerm_network_security_group.main: Refreshing state... [id=/subscriptions/1ac3cb02-c5db-4603-97cd-24523ae7a6d3/resourceGroups/TP2Terraform/providers/Microsoft.Network/networkSecurityGroups/VMTP2Terraform-nsg]
+azurerm_public_ip.main: Refreshing state... [id=/subscriptions/1ac3cb02-c5db-4603-97cd-24523ae7a6d3/resourceGroups/TP2Terraform/providers/Microsoft.Network/publicIPAddresses/vm-ip]
+azurerm_virtual_network.main: Refreshing state... [id=/subscriptions/1ac3cb02-c5db-4603-97cd-24523ae7a6d3/resourceGroups/TP2Terraform/providers/Microsoft.Network/virtualNetworks/vm-vnet]
+azurerm_subnet.main: Refreshing state... [id=/subscriptions/1ac3cb02-c5db-4603-97cd-24523ae7a6d3/resourceGroups/TP2Terraform/providers/Microsoft.Network/virtualNetworks/vm-vnet/subnets/vm-subnet]
+azurerm_network_interface.main: Refreshing state... [id=/subscriptions/1ac3cb02-c5db-4603-97cd-24523ae7a6d3/resourceGroups/TP2Terraform/providers/Microsoft.Network/networkInterfaces/vm-nic]
+azurerm_linux_virtual_machine.main: Refreshing state... [id=/subscriptions/1ac3cb02-c5db-4603-97cd-24523ae7a6d3/resourceGroups/TP2Terraform/providers/Microsoft.Compute/virtualMachines/VMTP2Terraform]
+
+Changes to Outputs:
+  + vm_dns_name  = "vmtp2terraform.francecentral.cloudapp.azure.com"
+  + vm_public_ip = "52.143.170.186"
+
+You can apply this plan to save these new output values to the Terraform state, without changing any real infrastructure.
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: yes
+
+
+Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+vm_dns_name = "vmtp2terraform.francecentral.cloudapp.azure.com"
+vm_public_ip = "52.143.170.186"
+```
+Connection à la VM via son nom de domain :
+```powershell
+PS C:\Users\TERRA> ssh azureuser@vmtp2terraform.francecentral.cloudapp.azure.com
+The authenticity of host 'vmtp2terraform.francecentral.cloudapp.azure.com (52.143.170.186)' can't be established.
+ED25519 key fingerprint is SHA256:jLjylrfghd4hopBe+S3pPRFaxxlYU5f4MTOR4VM0rNs.
+This host key is known by the following other names/addresses:
+    C:\Users\TERRA/.ssh/known_hosts:24: 52.143.170.186
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added 'vmtp2terraform.francecentral.cloudapp.azure.com' (ED25519) to the list of known hosts.
+Welcome to Ubuntu 20.04.6 LTS (GNU/Linux 5.15.0-1089-azure x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+ System information as of Wed Sep 10 16:35:53 UTC 2025
+
+  System load:  0.0               Processes:             110
+  Usage of /:   5.5% of 28.89GB   Users logged in:       0
+  Memory usage: 31%               IPv4 address for eth0: 10.0.1.4
+  Swap usage:   0%
+
+
+Expanded Security Maintenance for Applications is not enabled.
+
+0 updates can be applied immediately.
+
+Enable ESM Apps to receive additional future security updates.
+See https://ubuntu.com/esm or run: sudo pro status
+
+
+The list of available updates is more than a week old.
+To check for new updates run: sudo apt update
+New release '22.04.5 LTS' available.
+Run 'do-release-upgrade' to upgrade to it.
+
+
+Last login: Wed Sep 10 15:29:33 2025 from 83.192.233.164
+azureuser@VMTP2Terraform:~$
+```
