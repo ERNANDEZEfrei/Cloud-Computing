@@ -416,3 +416,14 @@ Run 'do-release-upgrade' to upgrade to it.
 Last login: Wed Sep 10 15:29:33 2025 from 83.192.233.164
 azureuser@VMTP2Terraform:~$
 ```
+## III. Blob storage
+### 2. Let's g
+[Voir dans le ficher 'storage.tf'](storage.tf)
+###
+```bash
+azureuser@VMTP2Terraform:~$ azcopy login
+INFO: Authentication is required. To sign in, open the webpage https://microsoft.com/devicelogin and enter the code C63MF5Y6M to authenticate.
+INFO: Logging in under the "Common" tenant. This will log the account in under its home tenant.
+INFO: If you plan to use AzCopy with a B2B account (where the account's home tenant is separate from the tenant of the target storage account), please sign in under the target tenant with --tenant-id
+INFO: Login succeeded.
+```

@@ -28,3 +28,13 @@ variable "my_ip" {
   type        = string
   description = "My public IP allowed for SSH access"
 }
+
+variable "storage_account_name" {
+  type        = string
+  description = "Storage Account Name"
+}
+
+variable "storage_container_name" {
+  type        = string
+  description = "Storage Container Name"
+}
