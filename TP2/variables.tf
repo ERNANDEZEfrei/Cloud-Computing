@@ -38,3 +38,8 @@ variable "storage_container_name" {
   type        = string
   description = "Storage Container Name"
 }
+
+variable "alert_email_address" {
+  type        = string
+  description = "Email Address"
+}

@@ -532,3 +532,118 @@ default via 10.0.1.1 dev eth0 proto dhcp src 10.0.1.4 metric 100
 169.254.169.254 via 10.0.1.1 dev eth0 proto dhcp src 10.0.1.4 metric 100
 ```
 ## IV. Monitoring
+### 2. Une alerte CPU*
+[Voir dans le ficher 'monitoring.tf'](monitoring.tf)
+### 3. Alerte mémoire
+[Voir dans le ficher 'monitoring.tf'](monitoring.tf)
+### 4. Proofs
+**A. Voir les alertes avec ```az``` : **
+```powershell
+az>> az monitor metrics alert list --resource-group TP2Terraform
+[
+  {
+    "actions": [
+      {
+        "actionGroupId": "/subscriptions/*******************/resourceGroups/TP2Terraform/providers/Microsoft.Insights/actionGroups/ag-TP2Terraform-alerts",
+        "webHookProperties": {}
+      }
+    ],
+    "autoMitigate": true,
+    "criteria": {
+      "allOf": [
+        {
+          "criterionType": "StaticThresholdCriterion",
+          "metricName": "Available Memory Bytes",
+          "metricNamespace": "Microsoft.Compute/virtualMachines",
+          "name": "Metric1",
+          "operator": "LessThan",
+          "skipMetricValidation": false,
+          "threshold": 536870912.0,
+          "timeAggregation": "Average"
+        }
+      ],
+      "odata.type": "Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria"
+    },
+    "description": "Alert when available memory is low",
+    "enabled": true,
+    "evaluationFrequency": "PT1M",
+    "id": "/subscriptions/*******************/resourceGroups/TP2Terraform/providers/Microsoft.Insights/metricAlerts/memory-alert-VMTP2Terraform",
+    "location": "global",
+    "name": "memory-alert-VMTP2Terraform",
+    "resourceGroup": "TP2Terraform",
+    "scopes": [
+      "/subscriptions/*******************/resourceGroups/TP2Terraform/providers/Microsoft.Compute/virtualMachines/VMTP2Terraform"
+    ],
+    "severity": 2,
+    "tags": {},
+    "targetResourceRegion": "",
+    "targetResourceType": "",
+    "type": "Microsoft.Insights/metricAlerts",
+    "windowSize": "PT5M"
+  },
+  {
+    "actions": [
+      {
+        "actionGroupId": "/subscriptions/*******************/resourceGroups/TP2Terraform/providers/Microsoft.Insights/actionGroups/ag-TP2Terraform-alerts",
+        "webHookProperties": {}
+      }
+    ],
+    "autoMitigate": true,
+    "criteria": {
+      "allOf": [
+        {
+          "criterionType": "StaticThresholdCriterion",
+          "metricName": "Percentage CPU",
+          "metricNamespace": "Microsoft.Compute/virtualMachines",
+          "name": "Metric1",
+          "operator": "GreaterThan",
+          "skipMetricValidation": false,
+          "threshold": 70.0,
+          "timeAggregation": "Average"
+        }
+      ],
+      "odata.type": "Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria"
+    },
+    "description": "Alert when CPU usage exceeds 70%",
+    "enabled": true,
+    "evaluationFrequency": "PT1M",
+    "id": "/subscriptions/*******************/resourceGroups/TP2Terraform/providers/Microsoft.Insights/metricAlerts/cpu-alert-VMTP2Terraform",
+    "location": "global",
+    "name": "cpu-alert-VMTP2Terraform",
+    "resourceGroup": "TP2Terraform",
+    "scopes": [
+      "/subscriptions/*******************/resourceGroups/TP2Terraform/providers/Microsoft.Compute/virtualMachines/VMTP2Terraform"
+    ],
+    "severity": 2,
+    "tags": {},
+    "targetResourceRegion": "",
+    "targetResourceType": "",
+    "type": "Microsoft.Insights/metricAlerts",
+    "windowSize": "PT5M"
+  }
+]
+```
+**B. ```Stress``` pour *fire* les alertes :**
+
+Commande pour alerte CPU :
+```powershell
+azureuser@VMTP2Terraform:~$ stress-ng --cpu 0 --timeout 300s
+stress-ng: info:  [22760] dispatching hogs: 1 cpu
+stress-ng: info:  [22760] successful run completed in 300.02s (5 mins, 0.02 secs)
+```
+Commande pour alerte RAM :
+```powershell
+azureuser@VMTP2Terraform:~$ stress-ng --vm 2 --vm-bytes 512M --timeout 300s
+stress-ng: info:  [22768] dispatching hogs: 2 vm
+stress-ng: info:  [22768] successful run completed in 300.02s (5 mins, 0.02 secs)
+```
+Vérification des alertes : 
+```powershell
+debian@PC-ALEX-TERRA ~> az monitor activity-log list --resource-group TP2Terraform --offset 1h --query "[?category.value=='Administrative'
+&& contains(operationName.value, 'alert')].{Time:eventTimestamp, AlertName:operationName.value, Status:status.value}" --output table
+Time                          AlertName                              Status
+----------------------------  -------------------------------------  ---------
+2025-09-11T17:15:41.9560608Z  Microsoft.Insights/metricalerts/write  Succeeded
+2025-09-11T17:15:41.5455899Z  Microsoft.Insights/metricalerts/write  Succeeded
+```
+## V. Azure Vault
