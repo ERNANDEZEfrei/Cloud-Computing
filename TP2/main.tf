@@ -71,6 +71,10 @@ resource "azurerm_linux_virtual_machine" "main" {
     sku       = "20_04-lts"
     version   = "latest"
   }
+
+  identity {
+    type = "SystemAssigned"
+  }
 }
 
 resource "azurerm_network_interface_security_group_association" "main" {

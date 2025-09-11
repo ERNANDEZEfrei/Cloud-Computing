@@ -419,11 +419,116 @@ azureuser@VMTP2Terraform:~$
 ## III. Blob storage
 ### 2. Let's g
 [Voir dans le ficher 'storage.tf'](storage.tf)
-###
-```bash
-azureuser@VMTP2Terraform:~$ azcopy login
-INFO: Authentication is required. To sign in, open the webpage https://microsoft.com/devicelogin and enter the code C63MF5Y6M to authenticate.
-INFO: Logging in under the "Common" tenant. This will log the account in under its home tenant.
-INFO: If you plan to use AzCopy with a B2B account (where the account's home tenant is separate from the tenant of the target storage account), please sign in under the target tenant with --tenant-id
-INFO: Login succeeded.
+
+Sans oublier de rajouter à la VM les lignes suivantes dans le ```main.tf``` :
 ```
+identity {
+    type = "SystemAssigned"
+  }
+```
+### 3. Proooooooofs
+```bash
+azureuser@VMTP2Terraform:~$ azcopy login --identity
+INFO: Login with identity succeeded.
+```
+Commande pour copier un fichier sur le blob storage :
+```bash
+azureuser@VMTP2Terraform:~$ touch texte.txt && echo "Texte" >> /home/azureuser/texte.txt
+azureuser@VMTP2Terraform:~$ azcopy copy /home/azureuser/texte.txt https://storageuseralexterra.blob.core.windows.net/storageterraform
+INFO: Scanning...
+INFO: Autologin not specified.
+INFO: Authenticating to destination using Azure AD
+INFO: Any empty folders will not be processed, because source and/or destination doesn't have full folder support
+
+Job 92baa42a-ba6f-c643-4e1d-b754a8093e4c has started
+Log file is located at: /home/azureuser/.azcopy/92baa42a-ba6f-c643-4e1d-b754a8093e4c.log
+
+100.0 %, 1 Done, 0 Failed, 0 Pending, 0 Skipped, 1 Total,
+
+
+Job 92baa42a-ba6f-c643-4e1d-b754a8093e4c summary
+Elapsed Time (Minutes): 0.0334
+Number of File Transfers: 1
+Number of Folder Property Transfers: 0
+Number of Symlink Transfers: 0
+Total Number of Transfers: 1
+Number of File Transfers Completed: 1
+Number of Folder Transfers Completed: 0
+Number of File Transfers Failed: 0
+Number of Folder Transfers Failed: 0
+Number of File Transfers Skipped: 0
+Number of Folder Transfers Skipped: 0
+Number of Symbolic Links Skipped: 0
+Number of Hardlinks Converted: 0
+Number of Special Files Skipped: 0
+Total Number of Bytes Transferred: 0
+Final Job Status: Completed
+
+```
+Commande ***azcopy*** pour lire le fichier que vous venez de push :
+```bash
+azureuser@VMTP2Terraform:~$ azcopy copy https://storageuseralexterra.blob.core.windows.net/storageterraform/texte.txt /tmp && cat /tmp/texte.txt
+INFO: Scanning...
+INFO: Autologin not specified.
+INFO: Authenticating to source using Azure AD
+INFO: Any empty folders will not be processed, because source and/or destination doesn't have full folder support
+
+Job 08b57e30-8591-aa4b-6d66-254bdabaf348 has started
+Log file is located at: /home/azureuser/.azcopy/08b57e30-8591-aa4b-6d66-254bdabaf348.log
+
+100.0 %, 1 Done, 0 Failed, 0 Pending, 0 Skipped, 1 Total, 2-sec Throughput (Mb/s): 0
+
+
+Job 08b57e30-8591-aa4b-6d66-254bdabaf348 summary
+Elapsed Time (Minutes): 0.0335
+Number of File Transfers: 1
+Number of Folder Property Transfers: 0
+Number of Symlink Transfers: 0
+Total Number of Transfers: 1
+Number of File Transfers Completed: 1
+Number of Folder Transfers Completed: 0
+Number of File Transfers Failed: 0
+Number of Folder Transfers Failed: 0
+Number of File Transfers Skipped: 0
+Number of Folder Transfers Skipped: 0
+Number of Symbolic Links Skipped: 0
+Number of Hardlinks Converted: 0
+Number of Special Files Skipped: 0
+Total Number of Bytes Transferred: 6
+Final Job Status: Completed
+
+Texte
+```
+**Explication : `azcopy login --identity`**
+
+En ajoutant dans le `main.tf` l’**identity system-assigned**, Azure attribue automatiquement une **managed identity** à la machine virtuelle  
+(un compte spécial créé et géré par Azure pour cette ressource).  
+
+Lors de l’exécution de la commande :
+
+1. **Détection de l’identité**  
+   AzCopy constate que la VM dispose d’une managed identity.  
+
+2. **Requête au service IMDS**  
+   AzCopy interroge le service d’identité local de la VM (*Instance Metadata Service*) pour obtenir un **token d’authentification** valable pour Azure Storage.  
+
+3. **Utilisation du token**  
+   Le token est récupéré localement et sert ensuite à authentifier toutes les commandes AzCopy, **sans avoir besoin de mot de passe ni de clé d’accès**. 
+
+Commande pour avoir le token d'authentification :
+```bash
+azureuser@VMTP2Terraform:~$ curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fmanagement.azure.com%2F' -H Metadata:true -s
+
+{"access_token":"blablablablabla","client_id":"************************","expires_in":"86400","expires_on":"1757695256","ext_expires_in":"86399","not_before":"1757608556","resource":"https://management.azure.com/","token_type":"Bearer"}
+```
+Source : https://learn.microsoft.com/en-us/entra/identity/managed-identities-azure-resources/how-to-use-vm-token
+
+Pour savoir comment la VM acccède à cette IP rien de plus simple : 
+```powershell
+azureuser@VMTP2Terraform:~$ ip route show
+default via 10.0.1.1 dev eth0 proto dhcp src 10.0.1.4 metric 100
+10.0.1.0/24 dev eth0 proto kernel scope link src 10.0.1.4 metric 100
+168.63.129.16 via 10.0.1.1 dev eth0 proto dhcp src 10.0.1.4 metric 100
+169.254.169.254 via 10.0.1.1 dev eth0 proto dhcp src 10.0.1.4 metric 100
+```
+## IV. Monitoring
