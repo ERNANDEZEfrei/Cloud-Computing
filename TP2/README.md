@@ -647,3 +647,73 @@ Time                          AlertName                              Status
 2025-09-11T17:15:41.5455899Z  Microsoft.Insights/metricalerts/write  Succeeded
 ```
 ## V. Azure Vault
+### 2. Do it !
+[Voir dans le ficher 'keyvault.tf'](keyvautl.tf)
+### 3. Proof proof proof
+Commande ```az``` pour afficher le secret :
+```powershell
+az>> az keyvault secret show --name "AzureKeyVaultTerraform" --vault-name "terraformvaultalexandre1"
+{
+  "attributes": {
+    "created": "2025-09-13T10:04:45+00:00",
+    "enabled": true,
+    "expires": null,
+    "notBefore": null,
+    "recoverableDays": 7,
+    "recoveryLevel": "CustomizedRecoverable+Purgeable",
+    "updated": "2025-09-13T10:04:45+00:00"
+  },
+  "contentType": "",
+  "id": "https://terraformvaultalexandre1.vault.azure.net/secrets/AzureKeyVaultTerraform/3d13e6b051834634910b14d07f0e3952",
+  "kid": null,
+  "managed": null,
+  "name": "AzureKeyVaultTerraform",
+  "tags": {},
+  "value": ")WN#3)%MfLLGKtl&"
+}
+```
+Commande **depuis la VM** pour afficher le secret :
+
+Dans un premier temps, installation du package et création du script :
+```bash
+sudo apt-get update
+sudo apt-get install -y jq
+```
+Script :
+```bash
+#!/bin/bash
+
+# Script : scriptsecret_alexandre.sh
+# But : récupérer un secret Azure Key Vault depuis la VM via son identité managée
+
+set -euo pipefail
+# Variables personnalisées
+KEYVAULT_NAME="terraformvaultalexandre1"     # Remplacer par le nom de votre Azure Key Vault
+SECRET_NAME="AzureKeyVaultTerraform"     # Remplacer par le nom du secret dans le Key Vault
+
+# Récupérer un token d’accès depuis le service Managed Identity (IMDS) pour autoriser les appels vers Key Vault :contentReference[oaicite:1]{index=1}
+ACCESS_TOKEN=$(curl -s \
+  -H "Metadata: true" \
+  "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://vault.azure.net" \
+  | jq -r '.access_token')
+
+if [ -z "$ACCESS_TOKEN" ]; then
+  echo "Erreur : impossible de récupérer le token d'accès."
+  exit 1
+fi
+
+# Récupérer le secret depuis le Key Vault à l’aide du token d’accès :contentReference[oaicite:2]{index=2}
+SECRET_VALUE=$(curl -s \
+  -H "Authorization: Bearer $ACCESS_TOKEN" \
+  "https://${KEYVAULT_NAME}.vault.azure.net/secrets/${SECRET_NAME}?api-version=7.4" \
+  | jq -r '.value')
+
+if [ -z "$SECRET_VALUE" ]; then
+  echo "Erreur : impossible de récupérer la valeur du secret."
+  exit 1
+fi
+
+echo "Valeur du secret \"${SECRET_NAME}\" dans Key Vault \"${KEYVAULT_NAME}\" :"
+echo "$SECRET_VALUE"
+```
+***Merci pour ce TP !***

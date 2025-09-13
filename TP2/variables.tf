@@ -43,3 +43,8 @@ variable "alert_email_address" {
   type        = string
   description = "Email Address"
 }
+
+variable "azure_key_vault_name" {
+  type        = string
+  description = "The name of the Azure Key Vault"
+}
