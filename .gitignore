@@ -5,3 +5,4 @@ terraform.tfstate.backup
 .terraform*
 /TP1/terraform.tfstate
 /TP2/terraform.tfstate
+debug.log
